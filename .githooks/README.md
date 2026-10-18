@@ -1,22 +1,7 @@
-# Repo name guard
+# Shipped branding guard
 
-These hooks keep disallowed external-product names out of the committed repository.
+`banned-terms.txt` contains case-insensitive POSIX extended regular expressions for names excluded from shipped application source and assets. Comments and empty lines are ignored.
 
-## Files
-- **`banned-terms.txt`** — the denylist. One POSIX extended-regex (ERE) per line,
-  matched **case-insensitively**. This file is passed to `grep -E -f`, so to stay
-  safe the scanners strip `#` comment lines and blank lines before using it — but
-  prefer keeping this file as bare patterns only. To ban another name later, add a
-  line (e.g. `acme[ ._-]?corp`).
-- **`pre-commit`** — git hook; blocks a commit whose staged content matches the
-  denylist. Install with `scripts/install-git-hooks.sh` (sets `core.hooksPath`).
-- **`claude-name-guard.sh`** — Claude Code `PreToolUse` hook (wired in
-  `.claude/settings.json`); blocks Write/Edit of a denylisted name into any file
-  that would be committed (gitignored local-only files are allowed to contain them).
-- CI: `.github/workflows/name-guard.yml` re-scans tracked files on push/PR.
+The shared implementation is `scripts/check-name-guard.sh`. It scans `backend/src`, `web/src`, `web/public`, `client-app/Sources`, `client-app/Resources`, `cloudfsd/Sources`, `cli/src` and `site`. Documentation and test fixtures are outside this branding check; they still need ordinary privacy and source review.
 
-## Local-only files allowed to contain the names (gitignored)
-`research/`, `AUDIT-2026-06.md`, `HANDOFF-REMEDIATION.md`, `.claude/settings.local.json`.
-
-## Bypass (discouraged)
-`git commit --no-verify` skips the pre-commit hook. The CI guard still runs.
+Run `scripts/install-git-hooks.sh` to install the staged-content pre-commit check. The `name-guard` GitHub workflow runs the same check on tracked source. `scripts/check-project.sh` includes it in the local release gate.

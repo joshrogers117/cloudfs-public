@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Native SMB distribution: app + Finder integration + embedded streaming engine.
+# No File Provider extension, kernel extension or provisioning profile required.
+name: CloudFSDesktop
+options:
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ENABLE_HARDENED_RUNTIME: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    CODE_SIGNING_ALLOWED: NO
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: NO
+targets:
+  CloudFSKit:
+    type: framework
+    platform: macOS
+    sources: [Sources/CloudFSKit]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cloudfs.client.kit
+        GENERATE_INFOPLIST_FILE: YES
+  CloudFSApp:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/CloudFSApp
+      - Shared
+      - path: scripts/.icon-build/AppIcon.icns
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cloudfs.client
+        INFOPLIST_FILE: CloudFSApp/Info.plist
+    dependencies:
+      - target: CloudFSKit
+        embed: true
+      - target: CloudFSFinderSync
+        embed: true
+    scheme:
+      configVariants: []
+  CloudFSFinderSync:
+    type: app-extension
+    platform: macOS
+    sources: [FinderSyncExt]
+    dependencies:
+      - target: CloudFSKit
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cloudfs.client.findersync
+        INFOPLIST_FILE: FinderSyncExt/Info.plist
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks @executable_path/../../../../Frameworks"

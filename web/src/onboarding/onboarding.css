@@ -1,0 +1,397 @@
+/*
+ * Provider-onboarding styles — the guided "How to get these" panel, provider
+ * logo tiles, deep links, DNS record tables, and the email-config wizard rows.
+ * Every value references a token from tokens.css so it matches the Mac/web dark
+ * aesthetic. Owned by the onboarding lane.
+ */
+
+/* ===== Provider logo tile =============================================== */
+.cfs-ob-logo {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cfs-radius-sm);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* ===== Deep link (external, opens console page) ========================= */
+.cfs-ob-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cfs-space-xs);
+  font: var(--cfs-font-micro);
+  font-weight: 600;
+  color: var(--cfs-accent);
+  text-decoration: none;
+  transition: color var(--cfs-motion-quick) var(--cfs-ease);
+}
+.cfs-ob-link:hover {
+  color: var(--cfs-accent-hover);
+  text-decoration: underline;
+}
+.cfs-ob-link svg {
+  flex: none;
+  opacity: 0.85;
+}
+
+/* ===== Guided steps panel ("How to get these") ========================= */
+.cfs-ob-guide {
+  border: 1px solid var(--cfs-border);
+  border-radius: var(--cfs-radius-md);
+  background: var(--cfs-surface-inset);
+  overflow: hidden;
+}
+.cfs-ob-guide__head {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-md);
+  width: 100%;
+  padding: var(--cfs-space-md) var(--cfs-space-lg);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--cfs-text-primary);
+  transition: background var(--cfs-motion-quick) var(--cfs-ease);
+}
+.cfs-ob-guide__head:hover {
+  background: var(--cfs-hover);
+}
+.cfs-ob-guide__title {
+  font: var(--cfs-font-caption);
+  font-weight: 600;
+  color: var(--cfs-text-primary);
+}
+.cfs-ob-guide__chevron {
+  margin-left: auto;
+  flex: none;
+  color: var(--cfs-text-tertiary);
+  transition: transform var(--cfs-motion-standard) var(--cfs-ease);
+}
+.cfs-ob-guide.is-open .cfs-ob-guide__chevron {
+  transform: rotate(180deg);
+}
+.cfs-ob-guide__body {
+  padding: var(--cfs-space-xs) var(--cfs-space-lg) var(--cfs-space-lg);
+  border-top: var(--cfs-hairline) solid var(--cfs-divider);
+}
+
+/* ===== Numbered steps =================================================== */
+.cfs-ob-steps {
+  list-style: none;
+  margin: var(--cfs-space-md) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-lg);
+}
+.cfs-ob-step {
+  display: flex;
+  gap: var(--cfs-space-md);
+}
+.cfs-ob-step__num {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: var(--cfs-radius-pill);
+  background: var(--cfs-accent-soft);
+  border: 1px solid var(--cfs-accent-border);
+  color: var(--cfs-accent);
+  font: var(--cfs-font-micro);
+  font-weight: 700;
+}
+.cfs-ob-step__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xs);
+  min-width: 0;
+}
+.cfs-ob-step__title {
+  font: var(--cfs-font-caption);
+  font-weight: 600;
+  color: var(--cfs-text-primary);
+}
+.cfs-ob-step__body {
+  margin: 0;
+  font: var(--cfs-font-micro);
+  line-height: 1.5;
+  color: var(--cfs-text-secondary);
+  max-width: 70ch;
+}
+
+/* ===== Copyable code line (e.g. OIDC redirect URI) ===================== */
+.cfs-ob-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cfs-space-sm);
+  max-width: 100%;
+  padding: var(--cfs-space-xs) var(--cfs-space-xs) var(--cfs-space-xs) var(--cfs-space-md);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+}
+.cfs-ob-copy__value {
+  font-family: var(--cfs-font-mono);
+  font-size: 11px;
+  color: var(--cfs-text-primary);
+  word-break: break-all;
+  min-width: 0;
+}
+.cfs-ob-copy__btn {
+  flex: none;
+  appearance: none;
+  border: 1px solid var(--cfs-border);
+  border-radius: var(--cfs-radius-xs);
+  background: var(--cfs-surface);
+  color: var(--cfs-accent);
+  font: var(--cfs-font-micro);
+  font-weight: 600;
+  padding: 2px var(--cfs-space-sm);
+  cursor: pointer;
+  transition: background var(--cfs-motion-quick) var(--cfs-ease),
+    color var(--cfs-motion-quick) var(--cfs-ease);
+}
+.cfs-ob-copy__btn:hover {
+  background: var(--cfs-hover);
+  color: var(--cfs-accent-hover);
+}
+
+/* ===== Docs footer line ================================================= */
+.cfs-ob-guide__docs {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--cfs-space-sm);
+  margin: var(--cfs-space-lg) 0 0;
+  padding-top: var(--cfs-space-md);
+  border-top: var(--cfs-hairline) solid var(--cfs-divider);
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-ob-guide__docs svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  margin-top: 1px;
+}
+
+/* ===== DNS records table =============================================== */
+.cfs-ob-dns {
+  margin-top: var(--cfs-space-lg);
+  padding-top: var(--cfs-space-md);
+  border-top: var(--cfs-hairline) solid var(--cfs-divider);
+}
+.cfs-ob-dns__label {
+  font: var(--cfs-font-section-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cfs-text-tertiary);
+}
+.cfs-ob-dns__lead {
+  margin: var(--cfs-space-xs) 0 var(--cfs-space-md);
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+  max-width: 70ch;
+}
+.cfs-ob-dns__table {
+  border: 1px solid var(--cfs-border);
+  border-radius: var(--cfs-radius-sm);
+  overflow: hidden;
+}
+.cfs-ob-dns__row {
+  display: grid;
+  grid-template-columns: 64px minmax(120px, 1fr) minmax(0, 2fr);
+  gap: var(--cfs-space-md);
+  padding: var(--cfs-space-sm) var(--cfs-space-md);
+  border-top: var(--cfs-hairline) solid var(--cfs-divider);
+  align-items: start;
+}
+.cfs-ob-dns__row:first-child {
+  border-top: none;
+}
+.cfs-ob-dns__row--head {
+  background: var(--cfs-bg);
+  font: var(--cfs-font-micro);
+  font-weight: 600;
+  color: var(--cfs-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.cfs-ob-dns__row code {
+  font-family: var(--cfs-font-mono);
+  font-size: 11px;
+  color: var(--cfs-text-primary);
+  word-break: break-all;
+}
+.cfs-ob-dns__type {
+  display: inline-block;
+  padding: 1px var(--cfs-space-xs);
+  border-radius: var(--cfs-radius-xs);
+  background: var(--cfs-accent-soft);
+  color: var(--cfs-accent) !important;
+  font-weight: 600;
+}
+.cfs-ob-dns__value {
+  display: block;
+}
+.cfs-ob-dns__note {
+  display: block;
+  margin-top: var(--cfs-space-xxs);
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+@media (max-width: 620px) {
+  .cfs-ob-dns__row {
+    grid-template-columns: 52px 1fr;
+  }
+  .cfs-ob-dns__row > span:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ===== Email config wizard ============================================= */
+.cfs-email-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cfs-space-sm);
+}
+.cfs-email-providers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--cfs-space-md);
+}
+.cfs-email-provider {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-md);
+  padding: var(--cfs-space-md) var(--cfs-space-lg);
+  text-align: left;
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+  border-radius: var(--cfs-radius-md);
+  cursor: pointer;
+  transition: background var(--cfs-motion-quick) var(--cfs-ease),
+    border-color var(--cfs-motion-quick) var(--cfs-ease);
+}
+.cfs-email-provider:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.cfs-email-provider[aria-pressed='true'] {
+  background: var(--cfs-accent-soft);
+  border-color: var(--cfs-accent-border);
+}
+.cfs-email-provider__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xxs);
+  min-width: 0;
+}
+.cfs-email-provider__name {
+  font: var(--cfs-font-caption);
+  font-weight: 600;
+  color: var(--cfs-text-primary);
+}
+.cfs-email-provider__blurb {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-email-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xl);
+  max-width: 560px;
+}
+.cfs-email-wizard__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cfs-space-lg);
+}
+@media (max-width: 620px) {
+  .cfs-email-wizard__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.cfs-email-test {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-md);
+  padding: var(--cfs-space-lg);
+  border-radius: var(--cfs-radius-md);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+}
+.cfs-email-test__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-md);
+  flex-wrap: wrap;
+}
+.cfs-email-secret-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--cfs-space-xs);
+  margin: 0;
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+  max-width: 64ch;
+}
+.cfs-email-secret-note svg {
+  flex: none;
+  width: 13px;
+  height: 13px;
+  margin-top: 1px;
+}
+
+/* ===== Auth-provider wizard extras ===================================== */
+/* Redirect-URI callout: a labeled, copyable block above the OIDC fields. */
+.cfs-auth-redirect {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-sm);
+  align-items: flex-start;
+  padding: var(--cfs-space-lg);
+  border-radius: var(--cfs-radius-md);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+}
+.cfs-auth-redirect .cfs-ob-copy {
+  max-width: 100%;
+}
+
+/* Auto-provision toggle row. */
+.cfs-auth-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--cfs-space-md);
+  cursor: pointer;
+}
+.cfs-auth-toggle input {
+  flex: none;
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--cfs-accent);
+  cursor: pointer;
+}
+.cfs-auth-toggle__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xxs);
+  min-width: 0;
+}
+.cfs-auth-toggle__title {
+  font: var(--cfs-font-caption);
+  font-weight: 600;
+  color: var(--cfs-text-primary);
+}
+.cfs-auth-toggle__hint {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+  max-width: 64ch;
+}

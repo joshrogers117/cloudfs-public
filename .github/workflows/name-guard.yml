@@ -1,0 +1,15 @@
+name: name-guard
+
+# Apply the same shipped-source branding guard as the local pre-commit hook.
+# Historical documentation and validation evidence are intentionally out of scope.
+on:
+  push:
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan shipped source and assets
+        run: bash scripts/check-name-guard.sh

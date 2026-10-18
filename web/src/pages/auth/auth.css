@@ -1,0 +1,392 @@
+/*
+ * Auth-screen styles — SignIn / SignUp only. Every value references a token from
+ * the frozen design system (tokens.css) so these screens read as the SAME product
+ * as the macOS LoginView. Owned by the Auth screen lane.
+ */
+
+/* The card body is a vertical stack with the design system's xl rhythm, matching
+   the Mac LoginView card (VStack spacing: Theme.Space.xl). */
+.cfs-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xl);
+}
+
+/* A group of stacked LabeledFields uses the tighter lg rhythm (Mac gatewayForm). */
+.cfs-auth-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-lg);
+}
+
+/* "or" hairline divider — mirrors the Mac LoginView Rectangle/divider/Text("or"). */
+.cfs-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-md);
+  color: var(--cfs-text-tertiary);
+  font: var(--cfs-font-micro);
+}
+.cfs-auth-divider::before,
+.cfs-auth-divider::after {
+  content: '';
+  flex: 1;
+  height: var(--cfs-hairline);
+  background: var(--cfs-divider);
+}
+
+/* Inline action link inside a field row (e.g. "use a recovery code"). */
+.cfs-auth-link {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font: var(--cfs-font-caption);
+  color: var(--cfs-accent);
+  cursor: pointer;
+  text-decoration: none;
+}
+.cfs-auth-link:hover {
+  color: var(--cfs-accent-hover);
+  text-decoration: underline;
+}
+
+/* The footnote already styled by shell.css (.cfs-auth-footnote); links inherit. */
+.cfs-auth-footnote a,
+.cfs-auth-footnote .cfs-auth-link {
+  font: inherit;
+  color: var(--cfs-accent);
+}
+.cfs-auth-footnote a:hover {
+  color: var(--cfs-accent-hover);
+  text-decoration: underline;
+}
+
+/* ===== Password strength meter ========================================= */
+.cfs-strength {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-sm);
+}
+.cfs-strength__bars {
+  display: flex;
+  gap: var(--cfs-space-xs);
+}
+.cfs-strength__seg {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--cfs-radius-pill);
+  background: var(--cfs-surface-inset);
+  transition: background var(--cfs-motion-standard) var(--cfs-ease);
+}
+.cfs-strength__seg.is-on {
+  background: var(--_tone, var(--cfs-text-tertiary));
+}
+.cfs-strength__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cfs-space-sm);
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+
+/* ===== 2FA / TOTP code entry =========================================== */
+.cfs-otp {
+  width: 100%;
+  letter-spacing: 0.4em;
+  font-family: var(--cfs-font-mono);
+  text-align: center;
+  font-size: 18px;
+}
+
+/* A small accessory row that sits under a field (e.g. recovery-code link). */
+.cfs-auth-accessory {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Success / verify-email panel — a calm centered block inside the card. */
+.cfs-auth-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--cfs-space-md);
+  padding: var(--cfs-space-sm) 0;
+}
+.cfs-auth-success__glyph {
+  color: var(--cfs-status-ok);
+  display: flex;
+}
+.cfs-auth-success__title {
+  font: var(--cfs-font-headline);
+  color: var(--cfs-text-primary);
+}
+.cfs-auth-success__body {
+  font: var(--cfs-font-caption);
+  color: var(--cfs-text-secondary);
+  max-width: 320px;
+}
+.cfs-auth-success__email {
+  color: var(--cfs-text-primary);
+  font-weight: 600;
+}
+
+/* A standalone secondary description line under a section (gating note, etc.). */
+.cfs-auth-note {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+  text-align: center;
+}
+.cfs-auth-note code {
+  font-family: var(--cfs-font-mono);
+  font-size: 11px;
+  color: var(--cfs-text-secondary);
+}
+
+/* ===== Device authorize (cloudfs:// handoff approval, auth-spec §1.3) ==== */
+
+/* "A Mac app at this device is asking to sign in as …" */
+.cfs-device-lede {
+  font: var(--cfs-font-body);
+  color: var(--cfs-text-secondary);
+}
+.cfs-device-lede strong {
+  color: var(--cfs-text-primary);
+}
+
+/* Device / Access fact rows — label column + value, like the spec mock. */
+.cfs-device-facts {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--cfs-space-sm) var(--cfs-space-xl);
+  margin: 0;
+  padding: var(--cfs-space-md) var(--cfs-space-lg);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+}
+.cfs-device-facts dt {
+  font: var(--cfs-font-caption);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-device-facts dd {
+  margin: 0;
+  font: var(--cfs-font-caption);
+  color: var(--cfs-text-primary);
+}
+
+/* "App didn't open? Paste this one-time code in the app:" */
+.cfs-device-fallback {
+  font: var(--cfs-font-caption);
+  color: var(--cfs-text-secondary);
+}
+
+/* The copyable one-time code — prominent, selectable monospace box. */
+.cfs-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cfs-space-md);
+  padding: var(--cfs-space-md) var(--cfs-space-lg);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-accent-border);
+}
+.cfs-code-box__code {
+  font-family: var(--cfs-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--cfs-text-primary);
+  word-break: break-all;
+  user-select: all;
+}
+
+/* ===== First-run setup wizard (auth-spec §1.1) =========================== */
+
+/* "✓ Organization created ✓ Admin signed in" checklist on the finish screen. */
+.cfs-setup-checklist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-sm);
+}
+.cfs-setup-checklist li {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-md);
+  font: var(--cfs-font-body);
+  color: var(--cfs-text-secondary);
+}
+.cfs-setup-checklist li svg {
+  color: var(--cfs-status-ok);
+  flex: none;
+}
+.cfs-setup-checklist strong {
+  color: var(--cfs-text-primary);
+}
+
+/* Next-step cards on the finish screen. */
+.cfs-setup-next {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-sm);
+}
+.cfs-setup-next__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xxs);
+  padding: var(--cfs-space-md) var(--cfs-space-lg);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+  text-decoration: none;
+  transition: border-color var(--cfs-motion-quick) var(--cfs-ease),
+    background var(--cfs-motion-quick) var(--cfs-ease);
+}
+a.cfs-setup-next__card:hover {
+  border-color: var(--cfs-accent-border);
+  background: var(--cfs-accent-soft);
+}
+.cfs-setup-next__title {
+  font: var(--cfs-font-headline);
+  color: var(--cfs-text-primary);
+}
+a.cfs-setup-next__card .cfs-setup-next__title {
+  color: var(--cfs-accent);
+}
+.cfs-setup-next__hint {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-setup-next__hint strong {
+  color: var(--cfs-text-secondary);
+}
+
+/* GetTheAppCard's button row (ONBOARDING.md build step 3): native Mac launch +
+   the optional Mac download link, sized to sit inside a
+   .cfs-setup-next__card wherever it's reused (Join.tsx success screen,
+   settings/GetTheAppSection.tsx). */
+.cfs-get-app {
+  min-width: 0;
+}
+.cfs-get-app__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cfs-space-sm);
+  margin-top: var(--cfs-space-xxs);
+}
+.cfs-get-app__apple {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+.cfs-get-app__update {
+  margin-top: var(--cfs-space-xxs);
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-get-app__update summary {
+  width: fit-content;
+  cursor: pointer;
+}
+.cfs-get-app__update summary:hover {
+  color: var(--cfs-text-secondary);
+}
+.cfs-get-app__update p {
+  max-width: 60ch;
+  margin: var(--cfs-space-xs) 0 0;
+  line-height: 1.45;
+}
+.cfs-get-app--compact {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.cfs-get-app--compact .cfs-get-app__actions {
+  margin-top: var(--cfs-space-xs);
+}
+
+/* Select control matching .cfs-input's look (role / filespace-access pickers on the
+   wizard's Health-check and Invite-the-team steps, ONBOARDING.md build step 5). */
+.cfs-select {
+  width: 100%;
+  height: 32px;
+  padding: 0 var(--cfs-space-md);
+  font: var(--cfs-font-body);
+  color: var(--cfs-text-primary);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+  border-radius: var(--cfs-radius-sm);
+}
+.cfs-select:focus {
+  outline: none;
+  border-color: var(--cfs-accent);
+  box-shadow: 0 0 0 1px var(--cfs-accent);
+}
+
+/* Multi-line email entry (Invite-the-team step) — .cfs-input's box look, sized for
+   a few lines instead of the fixed single-line input height. */
+textarea.cfs-input {
+  height: auto;
+  min-height: 84px;
+  padding: var(--cfs-space-sm) var(--cfs-space-md);
+  font-family: inherit;
+  resize: vertical;
+}
+
+/* Pass/fail probe rows — the wizard's Health-check step (doctor report) and the
+   Invite-the-team step's per-invite results (ONBOARDING.md build step 5). */
+.cfs-doctor-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-sm);
+}
+.cfs-doctor-row {
+  display: flex;
+  gap: var(--cfs-space-md);
+  align-items: flex-start;
+  padding: var(--cfs-space-md) var(--cfs-space-lg);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+}
+.cfs-doctor-row__dot {
+  margin-top: 5px;
+  flex: none;
+}
+.cfs-doctor-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cfs-doctor-row__title {
+  font: var(--cfs-font-headline);
+  color: var(--cfs-text-primary);
+}
+.cfs-doctor-row__detail {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-doctor-row__copy {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-sm);
+  margin-top: var(--cfs-space-xs);
+}
+.cfs-doctor-row__copy .cfs-input {
+  font-family: var(--cfs-font-mono);
+  font-size: 12px;
+}
+
+/* Center each invite outcome dot beside its two-line result. */
+.cfs-invite-result { align-items: center; }
+
+.cfs-auth-invite > summary { color: var(--cfs-accent); cursor: pointer; font: var(--cfs-font-body); }
+.cfs-auth-invite[open] > summary { margin-bottom: 16px; }

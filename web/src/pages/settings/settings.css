@@ -1,0 +1,323 @@
+/*
+ * Account-Settings lane styles — grouped settings that mirror the Mac app's
+ * Preferences / Cache panes. Every value references a token from tokens.css so
+ * the web app tunes with the rest of the design system. Owned by this lane.
+ */
+
+/* ===== Grouped settings (Preferences / Cache pane look) ================== */
+.cfs-set-group {
+  position: relative;
+  background: var(--cfs-surface);
+  border: 1px solid var(--cfs-border);
+  border-radius: var(--cfs-radius-md);
+  box-shadow: var(--cfs-shadow-card);
+}
+.cfs-set-group__head {
+  position: relative;
+  padding: 20px 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cfs-set-group__label {
+  font: var(--cfs-font-headline);
+  color: var(--cfs-text-primary);
+}
+.cfs-set-group__desc {
+  margin: 0;
+  font: var(--cfs-font-caption);
+  color: var(--cfs-text-secondary);
+  max-width: 62ch;
+}
+.cfs-set-group__rows {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* one settings row, hairline-separated like the Mac grouped lists */
+.cfs-set-row {
+  padding: 16px 24px;
+  border-top: var(--cfs-hairline) solid var(--cfs-divider);
+}
+.cfs-set-row__line {
+  display: flex;
+  gap: var(--cfs-space-lg);
+}
+.cfs-set-row__line--center {
+  align-items: center;
+}
+.cfs-set-row__line--top {
+  align-items: flex-start;
+}
+.cfs-set-row__leading {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  color: var(--cfs-text-secondary);
+}
+.cfs-set-row__leading svg {
+  width: 15px;
+  height: 15px;
+}
+.cfs-set-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xxs);
+  min-width: 0;
+}
+.cfs-set-row__title {
+  font: var(--cfs-font-body);
+  color: var(--cfs-text-primary);
+}
+.cfs-set-row__sublabel {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-set-row__trailing {
+  margin-left: auto;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-md);
+}
+.cfs-set-row__body {
+  margin-top: var(--cfs-space-lg);
+}
+
+/* ===== Members & invites (B26): role select + labeled select ============= */
+.cfs-set-select {
+  height: 32px;
+  padding: 0 var(--cfs-space-md);
+  font: var(--cfs-font-body);
+  color: var(--cfs-text-primary);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+  border-radius: var(--cfs-radius-sm);
+}
+.cfs-set-select:focus {
+  outline: none;
+  border-color: var(--cfs-accent);
+  box-shadow: 0 0 0 1px var(--cfs-accent);
+}
+.cfs-set-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-sm);
+}
+.cfs-set-field__label {
+  font: var(--cfs-font-caption);
+  color: var(--cfs-text-secondary);
+}
+
+/* ===== Forms inside rows ================================================= */
+.cfs-set-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-lg);
+  max-width: 420px;
+}
+.cfs-set-form__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-md);
+  flex-wrap: wrap;
+}
+.cfs-set-form__actions--end {
+  margin-left: auto;
+}
+
+/* ===== Inline status text (saved / error) =============================== */
+.cfs-set-note {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cfs-space-xs);
+  font: var(--cfs-font-micro);
+}
+.cfs-set-note svg {
+  width: 13px;
+  height: 13px;
+}
+.cfs-set-note--ok {
+  color: var(--cfs-status-ok);
+}
+.cfs-set-note--error {
+  color: var(--cfs-status-error);
+}
+
+/* ===== Value chip (read-only, e.g. role / status) ======================= */
+.cfs-set-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cfs-space-sm);
+  height: 22px;
+  padding: 0 var(--cfs-space-md);
+  border-radius: var(--cfs-radius-pill);
+  border: 1px solid var(--cfs-border);
+  background: var(--cfs-surface-inset);
+  font: var(--cfs-font-micro);
+  font-weight: 600;
+  color: var(--cfs-text-secondary);
+  white-space: nowrap;
+}
+.cfs-set-chip--accent {
+  border-color: var(--cfs-accent-border);
+  background: var(--cfs-accent-soft);
+  color: var(--cfs-accent);
+}
+
+/* ===== TOTP enrollment ================================================== */
+.cfs-totp {
+  display: flex;
+  gap: var(--cfs-space-xl);
+  flex-wrap: wrap;
+}
+/* Preserve the QR quiet zone and high contrast in either color theme. */
+.cfs-totp__qr {
+  flex: none;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--cfs-radius-md);
+  background: #fff;
+  color: #111;
+  text-align: center;
+}
+.cfs-totp__qr img {
+  width: 240px;
+  height: 240px;
+  image-rendering: pixelated;
+}
+.cfs-totp__detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-md);
+  min-width: 220px;
+  flex: 1;
+}
+.cfs-totp__hint {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+  max-width: 46ch;
+}
+/* monospaced secret, like the Mac mono path readout */
+.cfs-mono-key {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: var(--cfs-space-xs) var(--cfs-space-md);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+  font-family: var(--cfs-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--cfs-text-primary);
+}
+
+/* ===== Recovery codes =================================================== */
+.cfs-recovery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--cfs-space-sm);
+  padding: var(--cfs-space-md);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+  max-width: 360px;
+}
+.cfs-recovery__code {
+  font-family: var(--cfs-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--cfs-text-primary);
+  text-align: center;
+  padding: var(--cfs-space-xxs) 0;
+}
+
+/* ===== Passkey list ===================================================== */
+.cfs-passkeys {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-sm);
+}
+.cfs-passkey {
+  display: flex;
+  align-items: center;
+  gap: var(--cfs-space-lg);
+  padding: var(--cfs-space-md) var(--cfs-space-lg);
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-surface-inset);
+  border: 1px solid var(--cfs-border);
+}
+.cfs-passkey__icon {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--cfs-radius-sm);
+  background: var(--cfs-accent-soft);
+  color: var(--cfs-accent);
+}
+.cfs-passkey__icon svg {
+  width: 16px;
+  height: 16px;
+}
+.cfs-passkey__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cfs-space-xxs);
+  min-width: 0;
+}
+.cfs-passkey__label {
+  font: var(--cfs-font-body);
+  color: var(--cfs-text-primary);
+}
+.cfs-passkey__meta {
+  font: var(--cfs-font-micro);
+  color: var(--cfs-text-tertiary);
+}
+.cfs-passkey__action {
+  margin-left: auto;
+  flex: none;
+}
+.cfs-passkey__empty {
+  font: var(--cfs-font-caption);
+  color: var(--cfs-text-tertiary);
+  padding: var(--cfs-space-xs) 0;
+}
+
+/* Keep settings readable and preserve drafts while switching sections. */
+.cfs-settings-page { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 24px; }
+.cfs-workspace-settings > [hidden] { display: none; }
+.cfs-settings-nav { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--cfs-border); padding-bottom: 8px; }
+.cfs-settings-nav a { padding: 9px 14px; border-radius: 8px; color: var(--cfs-text-secondary); text-decoration: none; font: var(--cfs-font-body); }
+.cfs-settings-nav a:hover { background: var(--cfs-surface); color: var(--cfs-text-primary); }
+.cfs-settings-nav a[aria-current] { color: var(--cfs-accent); background: var(--cfs-accent-soft); }
+.cfs-settings-nav a:focus-visible { outline: 2px solid var(--cfs-accent); outline-offset: 2px; }
+.cfs-set-row__title, .cfs-set-row__sublabel { overflow-wrap: anywhere; }
+.cfs-set-row__trailing { flex-wrap: wrap; }
+.cfs-set-chip { min-height: 22px; height: auto; white-space: normal; overflow-wrap: anywhere; }
+.cfs-mono-key { overflow-wrap: anywhere; word-break: break-word; max-width: 100%; }
+@media (max-width: 700px) {
+  .cfs-set-group__head { padding: 18px 16px 14px; }
+  .cfs-set-row { padding: 16px; }
+  .cfs-set-row__line { flex-wrap: wrap; }
+  .cfs-set-row__text { flex: 1; min-width: 150px; }
+  .cfs-set-row__trailing { margin-left: 0; max-width: 100%; }
+  .cfs-totp__detail { min-width: 0; }
+  .cfs-set-form { width: 100%; }
+}
+
+.cfs-set-row__body--only { margin-top: 0; }
+.cfs-set-select { max-width: 100%; }
+.cfs-workspace-settings .cfs-email-providers { grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); }

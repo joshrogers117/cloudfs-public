@@ -1,0 +1,62 @@
+@import './design/tokens.css';
+
+/* cloud-fs global base — dark by default, near-black canvas like the Mac app. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font: var(--cfs-font-body);
+  color: var(--cfs-text-primary);
+  background: var(--cfs-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+a {
+  color: var(--cfs-accent);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--cfs-accent-hover);
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Accent-tinted focus ring, consistent everywhere. */
+:focus-visible {
+  outline: 2px solid var(--cfs-accent);
+  outline-offset: 2px;
+  border-radius: var(--cfs-radius-sm);
+}
+
+::selection {
+  background: var(--cfs-selection);
+}

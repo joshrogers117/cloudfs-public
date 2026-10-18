@@ -1,0 +1,45 @@
+# CloudFS production config. Generate this plus protected random secrets with:
+#   scripts/deploy-prod.sh --prepare
+# NON-SECRET literal KEY=value values only; shell expansion is never evaluated.
+
+# Cloudflare account that owns the Worker and R2 buckets (32 hexadecimal characters).
+CLOUDFLARE_ACCOUNT_ID=your-cloudflare-account-id
+# For a separate trial, give its Worker and audit bucket distinct names.
+# CLOUDFS_WORKER_NAME=cloudfs-trial
+# CLOUDFS_AUDIT_BUCKET=cloudfs-trial-audit
+
+# Existing R2 bucket for file data. The endpoint is derived automatically from account ID.
+S3_BUCKET=cloudfs-data
+# For another S3-compatible provider, set endpoint and region explicitly:
+# S3_ENDPOINT=https://your-s3-api-origin
+# S3_REGION=us-east-1
+
+# One public HTTPS origin serves the console, API and desktop sign-in.
+# Either a configured Cloudflare custom domain or the Worker's workers.dev origin.
+PUBLIC_BASE_URL=https://your-gateway.example.com
+# WEB_BASE_URL defaults to PUBLIC_BASE_URL; only set it for a separate console host.
+# WEB_BASE_URL=https://your-console.example.com
+
+# First-owner setup works while signup is closed. Teammates join using invitations.
+SIGNUP_MODE=closed
+
+# Optional passkeys / transactional email / native installer link:
+# WEBAUTHN_RP_ID=your.domain
+# WEBAUTHN_ORIGIN=https://your.domain
+# EMAIL_FROM=noreply@your.domain
+# EMAIL_FROM_NAME=CloudFS
+# EMAIL_PROVIDER=cloudflare
+# With Cloudflare email, deploy-prod generates the sender-restricted EMAIL binding.
+# Onboard the sender domain first with wrangler email sending enable <domain>.
+# Store the absolute path to a signed/notarized installer to include it on every update:
+# CLOUDFS_MAC_INSTALLER=/absolute/path/to/CloudFS.dmg
+# APP_DOWNLOAD_URL=https://your.domain/CloudFS.dmg
+
+# SECRETS belong in the git-ignored backend/.prod.secrets.json created by --prepare.
+# Fill its S3_ACCESS_KEY_ID and S3_SECRET_ACCESS_KEY from a bucket-scoped R2 API token.
+# The script generates AUTH_SIGNING_SECRET, BOOTSTRAP_SECRET and STORAGE_ENC_KEY once.
+# Keep those keys backed up and unchanged; the encryption key protects filespace master keys.
+# Existing deployments may instead retain secrets already set with wrangler secret put.
+# Operator recovery only: export or restore. Omit for normal service.
+# BACKUP_MODE=export
+# See docs/BACKUP-RESTORE.md before enabling; ordinary API traffic returns 503.

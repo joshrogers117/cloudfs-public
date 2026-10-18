@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability privately
+    url: https://github.com/joshrogers117/cloudfs-public/security/advisories/new
+    about: Keep security details and sensitive information out of public issues.
+  - name: Installation and troubleshooting
+    url: https://github.com/joshrogers117/cloudfs-public/blob/main/INSTALL.md
+    about: Start here for server setup and joining an existing team.

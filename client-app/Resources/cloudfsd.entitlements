@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- The embedded cloudfsd launch agent lives in the App Group container: it reads
+     daemon.env + token.txt and writes spill files there. On macOS 15+ the group
+     container is consent-gated for UNentitled processes — open(2) blocks on a TCC
+     prompt (or is denied outright when the on-disk binary changed under a running
+     process). The entitlement makes the daemon a first-class group member, so no
+     prompt and no gate. App Groups is not a restricted entitlement on macOS — no
+     provisioning profile required. -->
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.dev.cloudfs.client</string>
+	</array>
+</dict>
+</plist>

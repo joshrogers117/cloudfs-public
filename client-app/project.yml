@@ -1,0 +1,130 @@
+# XcodeGen spec for the cloud-fs macOS client + File Provider extension.
+#
+# Generate the .xcodeproj with:  CLOUDFS_DEV_TEAM=XXXXXXXXXX xcodegen generate
+# (or run scripts/make-app-fp.sh, which sources the gitignored signing env).
+#
+# The signing TEAM is intentionally NOT committed — it's substituted from the
+# CLOUDFS_DEV_TEAM environment variable so this repo stays generic. Everything
+# else (bundle ids, App Group) is generic reverse-DNS and safe to commit.
+#
+# Topology: CloudFSApp (host) embeds CloudFSFileProvider (appex). The appex is a
+# thin shim that forwards every op to the cloudfsd daemon over a UDS in the App
+# Group container; the daemon owns the relocatable cache + crypto + gateway.
+name: CloudFSClient
+options:
+  bundleIdPrefix: dev.cloudfs.client
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ${CLOUDFS_DEV_TEAM}
+    ENABLE_HARDENED_RUNTIME: YES
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: NO
+
+targets:
+  # --- Pure data layer (models, gateway seam, daemon client). Host app links it. ---
+  CloudFSKit:
+    type: framework
+    platform: macOS
+    sources:
+      - Sources/CloudFSKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cloudfs.client.kit
+        # A pure-Swift module with no Info.plist of its own; let Xcode synthesize one.
+        GENERATE_INFOPLIST_FILE: YES
+
+  # --- Host app: SwiftUI control surface; embeds + registers the File Provider domains. ---
+  CloudFSApp:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/CloudFSApp
+      - Shared
+      # App icon (CFBundleIconFile), generated from the canonical purple drive
+      # in Resources/cloudfs-logo.svg by scripts/make-icon.swift.
+      - path: Resources/AppIcon.icns
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cloudfs.client
+        INFOPLIST_FILE: CloudFSApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: CloudFSApp/CloudFSApp.entitlements
+    dependencies:
+      - target: CloudFSKit
+        embed: true
+      - target: CloudFSFileProvider
+        embed: true
+      - target: CloudFSFinderSync
+        embed: true
+    # M7: embed the cloudfsd daemon + its launch-agent plist INSIDE the Xcode
+    # build (post-compile, pre-signing) so Xcode's own provisioning-profile-backed
+    # signature seals them — a manual re-sign after xcodebuild invalidates the
+    # app's restricted entitlements (App Group) and the app fails to spawn.
+    postBuildScripts:
+      - name: Embed cloudfsd + launch agent
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          REPO="${PROJECT_DIR}/.."
+          SWIFT_CONFIG=debug; [ "${CONFIGURATION}" = "Release" ] && SWIFT_CONFIG=release
+          DAEMON="${REPO}/cloudfsd/.build/arm64-apple-macosx/${SWIFT_CONFIG}/cloudfsd"
+          APP="${TARGET_BUILD_DIR}/${WRAPPER_NAME}"
+          if [ ! -x "${DAEMON}" ]; then
+            echo "error: cloudfsd not built at ${DAEMON} (make-app-fp.sh builds it first)" >&2
+            exit 1
+          fi
+          cp "${DAEMON}" "${APP}/Contents/MacOS/cloudfsd"
+          mkdir -p "${APP}/Contents/Library/LaunchAgents"
+          cp "${PROJECT_DIR}/Resources/dev.cloudfs.daemon.plist" "${APP}/Contents/Library/LaunchAgents/"
+          # Give the daemon a real (team) signature so the sealed app validates,
+          # WITH the App Group entitlement — its config/spill files live in the
+          # group container, which macOS 15+ consent-gates for unentitled binaries
+          # (open(2) hangs on the prompt; see Resources/cloudfsd.entitlements).
+          if [ -n "${EXPANDED_CODE_SIGN_IDENTITY:-}" ]; then
+            codesign --force --sign "${EXPANDED_CODE_SIGN_IDENTITY}" \
+              --entitlements "${PROJECT_DIR}/Resources/cloudfsd.entitlements" \
+              "${APP}/Contents/MacOS/cloudfsd"
+          fi
+    scheme:
+      configVariants: []
+
+  # --- M8: Finder Sync appex — badges + Pin/Unpin/Copy-Link context menu. Thin
+  #     shim over CloudFSKit.FinderIntegration; talks to the daemon over the
+  #     App-Group finder.sock (the only rendezvous its mandatory sandbox reaches).
+  #     Links the HOST app's CloudFSKit.framework via the appex runpath. ---
+  CloudFSFinderSync:
+    type: app-extension
+    platform: macOS
+    sources:
+      - FinderSyncExt
+    dependencies:
+      - target: CloudFSKit
+        embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cloudfs.client.findersync
+        INFOPLIST_FILE: FinderSyncExt/Info.plist
+        CODE_SIGN_ENTITLEMENTS: FinderSyncExt/CloudFSFinderSync.entitlements
+        LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks @executable_path/../../../../Frameworks"
+
+  # --- The replicated File Provider extension: streaming + enumeration over the daemon. ---
+  CloudFSFileProvider:
+    type: app-extension
+    platform: macOS
+    sources:
+      - FileProviderExt
+      - Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.cloudfs.client.fileprovider
+        INFOPLIST_FILE: FileProviderExt/Info.plist
+        CODE_SIGN_ENTITLEMENTS: FileProviderExt/CloudFSFileProvider.entitlements

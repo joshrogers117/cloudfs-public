@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CloudFS — self-hosted files for Mac teams</title>
+  <meta name="description" content="CloudFS public preview. Deploy your own Cloudflare server and connect your team with the signed Mac app." />
+  <link rel="icon" type="image/x-icon" href="assets/cloudfs-drive-v2.ico" sizes="16x16 32x32 48x48" />
+  <link rel="icon" type="image/png" href="assets/cloudfs-drive-v2-32.png" sizes="32x32" />
+  <link rel="icon" type="image/svg+xml" href="assets/cloudfs-drive-v2.svg" sizes="any" />
+  <link rel="apple-touch-icon" href="assets/cloudfs-drive-v2-180.png" sizes="180x180" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container section">
+    <img src="assets/cloudfs-drive-v2.svg" width="64" height="64" alt="CloudFS purple drive" />
+    <p class="kicker">Public preview</p>
+    <h1>CloudFS</h1>
+    <p>Self-hosted streaming files for Mac teams. Run the server in your Cloudflare account and access your files in Finder.</p>
+    <p>Start with copies of files. Test your editing applications and recovery workflow before relying on the preview for production work.</p>
+    <p><a class="btn btn--primary" href="https://github.com/joshrogers117/cloudfs-public/releases">Download app and server</a></p>
+    <h2>Set up your team</h2>
+    <ol>
+      <li>One administrator prepares Workers Paid, R2, Node.js 22.12+ and a temporary provisioning token.</li>
+      <li>Extract the server package and run its guided installer. It creates the infrastructure and opens browser setup.</li>
+      <li>Create the first account and filespace, configure email delivery, and invite teammates.</li>
+      <li>Teammates accept their invitation, install the signed Mac app and sign in through their browser.</li>
+    </ol>
+    <p>Teammates do not need Cloudflare credentials or a setup secret. The server runs on Cloudflare after installation; the setup computer can be turned off.</p>
+    <p><a href="https://github.com/joshrogers117/cloudfs-public/blob/main/INSTALL.md">Read installation instructions</a> · <a href="https://github.com/joshrogers117/cloudfs-public/blob/main/docs/COMPATIBILITY.md">Compatibility and known limits</a></p>
+    <h2>Your infrastructure</h2>
+    <p>CloudFS uses Workers and Durable Objects for metadata and coordination, and R2 by default for encrypted file blocks. You pay your infrastructure provider directly. The server operator controls the encryption keys and must be trusted.</p>
+    <p><a href="https://github.com/joshrogers117/cloudfs-public">Source and documentation</a> · <a href="https://github.com/joshrogers117/cloudfs-public/issues">Report a problem</a> · <a href="https://github.com/joshrogers117/cloudfs-public/security/advisories/new">Report a security issue privately</a></p>
+    <p>Licensed under AGPL-3.0-or-later. No hosted CloudFS account or service is provided by this download.</p>
+  </main>
+</body>
+</html>

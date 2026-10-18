@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- M7: the embedded cloudfsd launch agent. Registered by the app via
+     SMAppService.agent(plistName:); launchd resolves BundleProgram relative to
+     the app bundle. All dynamic config (gateway, token, socket) comes from the
+     daemon.env file the app writes into the App Group container — this plist
+     stays static and generic. -->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>dev.cloudfs.daemon</string>
+	<key>BundleProgram</key>
+	<string>Contents/MacOS/cloudfsd</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>ProcessType</key>
+	<string>Interactive</string>
+</dict>
+</plist>

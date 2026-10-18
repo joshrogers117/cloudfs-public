@@ -1,0 +1,46 @@
+# ===== cloudfs — root .gitignore =====
+
+# Secrets & local environment
+.deployments/
+**/.dev.vars
+**/.prod.vars
+**/.prod.secrets.json
+**/secrets.json
+**/.env
+**/.env.local
+**/.env.*.local
+# Local code-signing identity (Apple Developer team id) — keeps the repo generic.
+**/.signing.env
+# Local File Provider test config (machine-specific gateway/token/key paths).
+**/.fp-test.env
+
+# Generated Xcode projects (xcodegen rebuilds these; the substituted DEVELOPMENT_TEAM
+# is machine-local, so the generated project is never committed).
+client-app/*.xcodeproj/
+
+# Dependencies & build output
+**/node_modules
+**/dist/
+**/.wrangler/
+**/.build/
+**/.swiftpm/
+**/__pycache__/
+*.pyc
+**/DerivedData/
+*.xcuserstate
+
+# Compiled binaries, app bundles & media (build/demo artifacts — never commit)
+*.app/
+*.o
+*.a
+*.dylib
+*.dSYM/
+*.mov
+*.mp4
+
+# OS cruft
+**/.DS_Store
+
+# Xcode build output (regenerable; xcodebuild -derivedDataPath ./build)
+client-app/build/
+client-app/scripts/.icon-build/

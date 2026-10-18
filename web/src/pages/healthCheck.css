@@ -1,0 +1,23 @@
+.cfs-health { max-width: 72ch; display: flex; flex-direction: column; gap: var(--cfs-space-lg); text-align: left; }
+.cfs-health p { margin: 0; color: var(--cfs-text-secondary); line-height: 1.5; }
+.cfs-health__heading { font: var(--cfs-font-title); margin: 0 0 var(--cfs-space-sm); color: var(--cfs-text-primary); }
+.cfs-health__loading { display: flex; align-items: center; justify-content: center; gap: var(--cfs-space-md); padding: var(--cfs-space-xl) 0; }
+.cfs-health__issues { padding: 0; margin: 0; list-style: none; }
+.cfs-health__issues > li { padding: var(--cfs-space-lg) 0; border-bottom: 1px solid var(--cfs-border); }
+.cfs-health__issues > li:first-child { padding-top: 0; }
+.cfs-health__issue-title { display: flex; align-items: baseline; gap: var(--cfs-space-md); flex-wrap: wrap; margin-bottom: var(--cfs-space-xs); }
+.cfs-health__issue-title h3 { margin: 0; font: var(--cfs-font-headline); }
+.cfs-health__severity { font: var(--cfs-font-micro); }
+.cfs-health__severity--warn { color: var(--cfs-status-warn); }
+.cfs-health__severity--error { color: var(--cfs-status-error); }
+.cfs-health details { margin-top: var(--cfs-space-md); }
+.cfs-health summary { color: var(--cfs-accent); cursor: pointer; }
+.cfs-health summary:focus-visible { outline: 2px solid var(--cfs-accent); outline-offset: 4px; border-radius: 2px; }
+.cfs-health__repair, .cfs-health__technical, .cfs-health__operator-help > p { margin-top: var(--cfs-space-md) !important; }
+.cfs-health__repair ol { padding-inline-start: 22px; margin: var(--cfs-space-sm) 0; color: var(--cfs-text-secondary); }
+.cfs-health__repair li { padding-inline-start: 4px; margin-bottom: var(--cfs-space-sm); line-height: 1.5; }
+.cfs-health__technical { white-space: pre-wrap; overflow-wrap: anywhere; font: var(--cfs-font-micro); }
+.cfs-health__next { margin-top: var(--cfs-space-md) !important; }
+.cfs-health__actions, .cfs-health nav { display: flex; flex-wrap: wrap; gap: var(--cfs-space-md); }
+.cfs-health nav { margin: var(--cfs-space-md) 0; }
+.cfs-health a { color: var(--cfs-accent); }

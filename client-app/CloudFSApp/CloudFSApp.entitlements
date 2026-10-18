@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- M7 (NFS-loopback era): the host app is NO LONGER SANDBOXED. The sandbox was
+     a File-Provider-era requirement (the appex demanded a sandboxed host); the
+     production app now manages a launch agent (SMAppService), spawns the embedded
+     daemon, and provisions files in the group container — a system-utility role,
+     the same shape as the reference products. The appex (shelved, research flag)
+     keeps ITS sandbox in its own entitlements. -->
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.dev.cloudfs.client</string>
+	</array>
+	<!-- Data-protection keychain (Keychain.swift pins kSecUseDataProtectionKeychain):
+	     the FIRST group here is the default write target. Listing it explicitly —
+	     rather than relying on the app-identifier fallback — is what the dev
+	     provisioning profile authorizes (TeamID.*). $(AppIdentifierPrefix) expands
+	     at sign time, so no team id is committed. -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)dev.cloudfs.client</string>
+	</array>
+</dict>
+</plist>

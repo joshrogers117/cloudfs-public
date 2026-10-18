@@ -1,0 +1,38 @@
+# Local-dev / test secrets TEMPLATE (audit B7). COPY to `.dev.vars` before `npm test`
+# or `wrangler dev`:  `cp .dev.vars.example .dev.vars`
+#
+# `.dev.vars` is git-ignored; this committed template lists every key the dev server
+# and the vitest-plugin test runtime need, so a fresh checkout can run the suite.
+# The stand-in values below are PUBLIC — rotate them before any non-dev use. For a real
+# deploy these become Worker secrets:  `wrangler secret put <NAME> --env production`.
+
+# ---- auth / bootstrap signing ----
+AUTH_SIGNING_SECRET="local-dev-signing-secret-change-me-32chars"
+BOOTSTRAP_SECRET="local-dev-bootstrap-secret-change-me-32chars"
+OIDC_CLIENT_SECRET="local-dev-oidc-client-secret-change-me-32"
+# (The legacy DEV_TOKEN static bearer was RETIRED — the gateway authenticates ONLY via
+#  signed session/service tokens. Bootstrap a real admin token per BOOTSTRAP.md.)
+
+# ---- UI-managed storage credential encryption (AES-256-GCM, 32 random bytes b64) ----
+# REQUIRED: generate your OWN — do NOT ship this placeholder. Anyone with this key can
+# decrypt your sealed filespace keys and storage/email/SSO secrets. Generate with: openssl rand -base64 32
+STORAGE_ENC_KEY="CHANGE-ME-run: openssl rand -base64 32"
+
+# ---- DEFAULT S3-compatible storage backend presign credential (local: MinIO) ----
+S3_ACCESS_KEY_ID="localdev"
+S3_SECRET_ACCESS_KEY="localdevsecret"
+# Example per-backend credential pair (uncomment + set storageCredentialRef:"b2" on the space):
+# S3_ACCESS_KEY_ID__B2="..."
+# S3_SECRET_ACCESS_KEY__B2="..."
+
+# ---- SIGNUP_MODE="invite" tokens (only consulted when SIGNUP_MODE=invite) ----
+# SIGNUP_INVITE_TOKENS="local-dev-invite-token"
+
+# ---- email: log verification/invite LINKS to the Worker console in dev ----
+EMAIL_DEV_CONSOLE=1
+
+# ---- audit B7 tripwire opt-in ----
+# Local dev + the vitest suite run SIGNUP_MODE=open over the https://gw.local test origin,
+# so we explicitly allow open signup here. A REAL deployment leaves this UNSET so an
+# accidental SIGNUP_MODE=open on https is refused (fail-closed).
+SIGNUP_OPEN_ON_HTTPS=1

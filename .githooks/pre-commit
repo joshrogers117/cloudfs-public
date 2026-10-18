@@ -1,0 +1,9 @@
+#!/bin/sh
+# cloudfs pre-commit guard. The shared checker scopes the denylist to shipped
+# source/assets; see CONTRIBUTING.md and .githooks/banned-terms.txt.
+#
+# Bypass once (NOT recommended): git commit --no-verify
+set -eu
+
+ROOT="$(git rev-parse --show-toplevel)"
+exec "$ROOT/scripts/check-name-guard.sh" --cached

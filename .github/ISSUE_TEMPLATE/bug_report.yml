@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a reproducible CloudFS problem using disposable data.
+body:
+  - type: markdown
+    attributes:
+      value: "Do not post passwords, tokens, setup secrets, recovery keys, private filenames or invitation/reset links. Report vulnerabilities privately through the Security tab."
+  - type: input
+    id: versions
+    attributes:
+      label: Versions and environment
+      description: App version/build, server release, macOS version and processor.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Use a small example with disposable files. State expected and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Redacted diagnostics
+      description: Include only relevant errors after removing credentials and private data.

@@ -1,0 +1,32 @@
+name: validate
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backend-and-web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            web/package-lock.json
+      - run: npm ci --prefix backend
+      - run: npm ci --prefix web
+      - name: Prepare local-only test secrets
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import { randomBytes } from 'node:crypto';
+          const fixture = readFileSync('backend/.dev.vars.example', 'utf8')
+            .replace(/^STORAGE_ENC_KEY=.*$/m, `STORAGE_ENC_KEY="${randomBytes(32).toString('base64')}"`);
+          writeFileSync('backend/.dev.vars', fixture, { mode: 0o600, flag: 'wx' });
+          NODE
+      - run: bash scripts/check-project.sh

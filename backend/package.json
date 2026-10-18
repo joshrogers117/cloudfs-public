@@ -1,0 +1,28 @@
+{
+  "name": "cloudfs-gateway",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "cloud-fs gateway: Workers + per-filespace Durable Object (metadata authority + lock manager) over R2.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "deploy": "../scripts/deploy-prod.sh",
+    "deploy:check": "../scripts/deploy-prod.sh --dry-run"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.5.0",
+    "@simplewebauthn/server": "^13.3.3",
+    "aws4fetch": "^1.0.20"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.4",
+    "@cloudflare/workers-types": "^5.20261018.1",
+    "@types/node": "^22.20.5",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.12",
+    "wrangler": "^4.151.1"
+  }
+}

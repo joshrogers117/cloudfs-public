@@ -1,0 +1,17 @@
+lucid[ ._-]?link
+suite[ ._-]?studios
+frame[ ._-]?io
+juice[ ._-]?fs
+rclone
+seaweed[ ._-]?fs
+geese[ ._-]?fs
+objective[ ._-]?fs
+\bctera\b
+nasuni
+panzura
+mountain[ ._-]?duck
+onedrive
+google[ ._-]?drive
+dropbox
+\bicloud\b
+postlab

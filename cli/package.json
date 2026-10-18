@@ -1,0 +1,30 @@
+{
+  "name": "cloudfs-cli",
+  "version": "0.1.0",
+  "license": "AGPL-3.0-or-later",
+  "private": true,
+  "type": "module",
+  "description": "Command-line client for the cloud-fs gateway and local daemon.",
+  "bin": {
+    "cloudfs": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node --experimental-strip-types src/main.ts",
+    "cloudfs": "node --experimental-strip-types src/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.8"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

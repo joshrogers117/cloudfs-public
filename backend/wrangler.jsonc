@@ -1,0 +1,242 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cloudfs-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-01",
+  "durable_objects": {
+    "bindings": [
+      { "name": "FILESPACE", "class_name": "FilespaceDO" },
+      { "name": "ORG_DO", "class_name": "OrgDO" },
+      // Per-org auth authority (accounts/credentials/sessions/service-tokens/email-tokens).
+      { "name": "AUTH_DO", "class_name": "AuthDO" },
+      // Global singleton email -> {orgId, accountId} directory (resolves login pre-org).
+      { "name": "DIRECTORY_DO", "class_name": "DirectoryDO" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["FilespaceDO"] },
+    { "tag": "v2", "new_sqlite_classes": ["OrgDO"] },
+    { "tag": "v3", "new_sqlite_classes": ["AuthDO", "DirectoryDO"] }
+  ],
+  // Email Sending stays unbound for local dev and tests. Production has a separate binding
+  // below, restricted to the account's already-onboarded sender address.
+  // R2 bucket for audit-log ARCHIVAL (WS3). The FilespaceDO keeps a small recent
+  // ring of audit events in its SQLite; older sealed records are flushed here as
+  // NDJSON segments (`audit/{filespaceId}/{YYYY-MM-DD}.ndjson`) plus a per-space
+  // `index.json` manifest that keeps the hash chain continuous across the DO→R2
+  // boundary. Native binding (not presigned/S3) — the DO reads/writes it directly.
+  // `bucket_name` is the prod R2 bucket; the vitest pool provisions a local
+  // simulated bucket for this binding automatically (no account needed).
+  "r2_buckets": [
+    { "binding": "AUDIT_BUCKET", "bucket_name": "cloudfs-audit" },
+    // Local native-verification fixture. Production deployment tooling binds its
+    // actual default data bucket and emits the exact DATA_BUCKET identity vars.
+    { "binding": "DATA_BUCKET", "bucket_name": "cloudfs-data" }
+  ],
+  // Only NON-SECRET config lives here (F7 closed). The secret-class values —
+  // AUTH_SIGNING_SECRET, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY,
+  // S3_ACCESS_KEY_ID__<REF> / S3_SECRET_ACCESS_KEY__<REF> (per-backend BYO-storage creds),
+  // STORAGE_ENC_KEY (AES-256-GCM key for UI-managed encrypted storage credentials, API.md §8c),
+  // SIGNUP_INVITE_TOKENS, OIDC_CLIENT_SECRET — live in `.dev.vars` (local dev/test,
+  // git-ignored) and `wrangler secret put` (prod). See backend/API.md §8 + .dev.vars.
+  //
+  // STORAGE (API.md §8a): S3_ENDPOINT/S3_BUCKET/S3_REGION below are the DEPLOYMENT-DEFAULT
+  // S3-compatible backend. cloud-fs is bring-your-own-storage: a filespace can override its
+  // backend (endpoint/region/bucket/forcePathStyle + a storageCredentialRef) in the OrgDO
+  // `spaces` registry; presigning is provider-agnostic S3 SigV4 (R2/AWS S3/B2/MinIO/Wasabi/Ceph).
+  //
+  // SIGNUP (API.md §8b): SIGNUP_MODE gates POST /v1/auth/signup. Code default (var absent) is
+  // "invite"; dev sets "open". SIGNUP_ALLOWED_DOMAINS is a non-secret var (mode=domain);
+  // SIGNUP_INVITE_TOKENS is a SECRET (mode=invite) — never put it here.
+  //
+  // EMAIL PROVIDER (API.md §8). Pick a provider explicitly with EMAIL_PROVIDER ∈
+  // cloudflare | resend | postmark | ses | console. Cloudflare Email Sending (the send_email
+  // binding) is the ZERO-EXTERNAL-ACCOUNT DEFAULT for self-hosters; Resend/Postmark/SES are opt-in
+  // deliverability upgrades. When EMAIL_PROVIDER is UNSET, selection auto-detects from configured
+  // secrets: Resend (RESEND_API_KEY) > Postmark (POSTMARK_SERVER_TOKEN) > SES (SES_* creds + region)
+  // > Cloudflare send_email binding > console dev sender (EMAIL_DEV_CONSOLE=1) > no-op fake. The
+  // provider credentials are OPTIONAL SECRETS — never put RESEND_API_KEY / POSTMARK_SERVER_TOKEN /
+  // SES_ACCESS_KEY_ID / SES_SECRET_ACCESS_KEY in "vars" here; provision via `wrangler secret put`
+  // (prod) or `.dev.vars` (local). EMAIL_FROM + EMAIL_PROVIDER + SES_REGION are non-secret vars.
+  //
+  // PASSWORD HARDENING (API.md §8). SCRYPT_COST_N (non-secret var) overrides the default scrypt N
+  // (2^15 = 32768 — workerd-safe under the 128 MB isolate cap; must be a power of two) to tune
+  // per-login CPU/memory cost. CHECK_BREACHED_PASSWORDS
+  // ("1"/"true", default OFF) enables the HaveIBeenPwned k-anonymity check at signup/change/reset;
+  // turn it ON in prod (fails open if HIBP is unreachable).
+  //
+  // OIDC_* below are non-secret config. Endpoints are hard-set for local dev so
+  // discovery isn't attempted; in prod either hard-set them or omit and let
+  // discover(OIDC_ISSUER) fill them. The /v1/auth/oidc/* routes are DISABLED
+  // (404) unless issuer+client_id+client_secret+redirect+org are all present.
+  "vars": {
+    "S3_ENDPOINT": "http://127.0.0.1:9000",
+    "S3_BUCKET": "cloudfs",
+    // SigV4 region for the DEFAULT backend; "auto" suits R2 + local MinIO. AWS S3 / B2 / Wasabi
+    // want a real region. Per-filespace backends set their own region in the registry (API.md §8a).
+    "S3_REGION": "auto",
+    "OIDC_ISSUER": "https://idp.local.test",
+    "OIDC_CLIENT_ID": "cloudfs-dev-client",
+    "OIDC_REDIRECT_URI": "http://127.0.0.1:8787/v1/auth/oidc/callback",
+    "OIDC_ORG_ID": "org1",
+    "OIDC_ALLOWED_DOMAINS": "acmepost.com",
+    "OIDC_AUTO_PROVISION": "false",
+    // First-login OWNER bootstrap allow-list (fail-closed). The FIRST verified SSO identity for an
+    // empty org becomes its owner — gated by an EXPLICIT allow-list so it can't be any random user.
+    // Either set OIDC_BOOTSTRAP_EMAIL to the single permitted email, OR rely on OIDC_ALLOWED_DOMAINS
+    // (the email's domain must be listed). If NEITHER is set, owner bootstrap is REFUSED.
+    "OIDC_BOOTSTRAP_EMAIL": "",
+    "OIDC_AUTHORIZATION_ENDPOINT": "https://idp.local.test/authorize",
+    "OIDC_TOKEN_ENDPOINT": "https://idp.local.test/token",
+    "OIDC_JWKS_URI": "https://idp.local.test/jwks",
+
+    // The single org allowed to manage the DEPLOYMENT-WIDE auth/SSO config from the web admin
+    // console (GET/PUT/DELETE/validate on /v1/orgs/:org/auth-config — API.md §8d). Set it to your
+    // bootstrap/primary org id. If UNSET it falls back to OIDC_ORG_ID; if THAT is also unset, the
+    // auth-config API is DISABLED for every org (403 — fail safe, never "any org's admin").
+    // "AUTH_CONFIG_ADMIN_ORG": "org1",
+
+    // ---- transactional email (non-secret config) ----
+    // EMAIL_FROM is the verified from-address; required for any real sending (Resend OR the
+    // Cloudflare binding). The default below is a placeholder for prod — change to a verified
+    // address. With NO provider configured (no RESEND_API_KEY, no EMAIL binding) the no-op fake
+    // sender is used (verification links are still issued + re-sendable). To exercise signup
+    // locally with real-looking output, set EMAIL_DEV_CONSOLE to "1" (the console sender logs the
+    // verification/invite LINK to the Worker console). Leave it commented in prod.
+    "EMAIL_FROM": "noreply@cloudfs.app",
+    "EMAIL_FROM_NAME": "CloudFS",
+    // "EMAIL_DEV_CONSOLE": "1",
+    // Explicit email-provider selector (cloudflare | resend | postmark | ses | console). Leave
+    // unset to auto-detect from configured secrets. For self-hosters, "cloudflare" (the send_email
+    // binding) is the zero-external-account default.
+    // "EMAIL_PROVIDER": "cloudflare",
+    // SES region (non-secret) when EMAIL_PROVIDER="ses"; the SES_ACCESS_KEY_ID/SES_SECRET_ACCESS_KEY
+    // creds are SECRETS — provision via `wrangler secret put`, never here.
+    // "SES_REGION": "us-east-1",
+    "PRODUCT_NAME": "CloudFS",
+
+    // ---- password hardening (src/security/auth-password.ts; API.md §8) ----
+    // SCRYPT_COST_N overrides the default scrypt N (2^15 = 32768, workerd-safe; MUST be a power of
+    // two) to tune per-login CPU/memory cost. CHECK_BREACHED_PASSWORDS ("1"/"true") enables the HIBP
+    // breached-password check at signup/change/reset (default OFF; fails open on HIBP outage — ON in prod).
+    // "SCRYPT_COST_N": "32768",
+    // "CHECK_BREACHED_PASSWORDS": "1",
+
+    // ---- public portal base URL for email links + the WebAuthn ceremony origin ----
+    "PUBLIC_BASE_URL": "http://127.0.0.1:8787",
+    // ---- web-app (SPA) origin for HUMAN-clicked email links (verification page) ----
+    // The verification link must land on the web app's GET-able `/verify-email` page (which POSTs
+    // {token, orgId} to the POST confirm route), NOT the Worker's POST-only API route. Dev = Vite.
+    "WEB_BASE_URL": "http://localhost:5173",
+
+    // ---- self-serve signup gate (self-host deployment policy; src/signup-mode.ts) ----
+    // SIGNUP_MODE ∈ "closed" | "invite" | "domain" | "open". The CODE default (when this var
+    // is UNSET) is "invite" — safe for self-host. Local dev + the vitest suite set "open" so
+    // the integration signup flow runs without an invite token. For "domain" mode set
+    // SIGNUP_ALLOWED_DOMAINS (comma/space-separated). For "invite" mode set the
+    // SIGNUP_INVITE_TOKENS SECRET (never a var — provision via `wrangler secret put`).
+    "SIGNUP_MODE": "open",
+
+    // ---- WebAuthn / passkeys RP config (CONTRACTS-AUTH.md §1.4) ----
+    // RP_ID is the registrable domain; "localhost" for dev. ORIGIN is the exact ceremony
+    // origin(s) (comma-separated). The /v1/auth/webauthn/* routes 404 unless RP_ID is set.
+    "WEBAUTHN_RP_ID": "localhost",
+    "WEBAUTHN_RP_NAME": "CloudFS",
+    "WEBAUTHN_ORIGIN": "http://localhost:5173,http://127.0.0.1:8787",
+
+    // ---- demo fixtures (audit B24) ----
+    // Seed Project A / A001.mov / timeline.prproj into a NEW filespace. ON for local dev + the
+    // vitest fixtures; the production env OMITS it so a real deployment starts EMPTY.
+    "SEED_DEMO_ITEMS": "1",
+
+    // ---- rate-limit caps (audit B23) ----
+    // Production defaults: presign 8192/2048, mutation 300/50. Dev/test
+    // pin a SMALL presign cap so the rate-limit integration test trips deterministically with a
+    // modest burst. Real deployments omit these (or tune to their workload + block size).
+    "RL_PRESIGN_CAPACITY": "60",
+    "RL_PRESIGN_REFILL": "5",
+    "RL_MUTATION_CAPACITY": "30",
+    "RL_MUTATION_REFILL": "2"
+  },
+
+  // =====================================================================================
+  // PRODUCTION environment (audit B7). Deploy with: `wrangler deploy --env production`.
+  //
+  // The TOP-LEVEL `vars` above are the LOCAL-DEV / vitest defaults (localhost URLs, MinIO,
+  // SIGNUP_MODE="open") — convenient for `wrangler dev` + `npm test`, but DANGEROUS to ship.
+  // Deploying the bare `wrangler deploy` used to push those verbatim, giving strangers
+  // self-serve orgs that presign into your default bucket, localhost email links, and broken
+  // passkeys. This `production` env OVERRIDES every such value with a safe/required one.
+  //
+  // Required before first prod deploy (edit the placeholders below, then set the matching
+  // SECRETS via `wrangler secret put ... --env production`):
+  //   • S3_ENDPOINT / S3_BUCKET / S3_REGION  — your BYO bucket
+  //   • PUBLIC_BASE_URL                       — the Worker's public https origin
+  //   • WEB_BASE_URL                          — the admin console's https origin
+  //   • WEBAUTHN_RP_ID / WEBAUTHN_ORIGIN      — your registrable domain + ceremony origin
+  //   • EMAIL_FROM                            — a verified from-address
+  //   • SIGNUP_MODE                           — omitted here ⇒ code default "invite" (safe)
+  //
+  // Run `GET /v1/admin/doctor` (audit B8) right after deploy to catch anything still wrong.
+  "env": {
+    "production": {
+      // deploy-prod generates the EMAIL binding from the operator's EMAIL_FROM.
+      // A fresh deployment without a sender uses copy-link invitations.
+      "send_email": [],
+      // Persist deliberate structured events. Automatic invocation logs include
+      // full request URLs, which can contain OIDC codes or one-use invite tokens.
+      "observability": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "logs": { "enabled": true, "invocation_logs": false }
+      },
+      // Password hashing and large presign batches exceed the Free plan's 10 ms
+      // request budget. Production requires Workers Paid; keep a bounded CPU cap.
+      "limits": { "cpu_ms": 30000 },
+      "durable_objects": {
+        "bindings": [
+          { "name": "FILESPACE", "class_name": "FilespaceDO" },
+          { "name": "ORG_DO", "class_name": "OrgDO" },
+          { "name": "AUTH_DO", "class_name": "AuthDO" },
+          { "name": "DIRECTORY_DO", "class_name": "DirectoryDO" }
+        ]
+      },
+      "r2_buckets": [
+        { "binding": "AUDIT_BUCKET", "bucket_name": "cloudfs-audit" }
+      ],
+      // Serve the React admin console (web/dist) SAME-ORIGIN from this Worker: `/v1/*` runs the
+      // gateway, everything else serves the SPA (index.html fallback). Same-origin means no CORS
+      // and the SameSite=Lax session cookie just works. Build first: from web/, run
+      // `VITE_USE_MOCK=0 VITE_API_BASE= npm run build` (scripts/deploy-prod.sh does this).
+      "assets": {
+        "directory": "../web/dist",
+        "not_found_handling": "single-page-application",
+        "run_worker_first": ["/v1/*"]
+      },
+      "vars": {
+        // DEPLOYMENT-SPECIFIC values (your R2 endpoint/bucket + public origins) live in a
+        // GIT-IGNORED `backend/.prod.vars` and are applied at deploy time by
+        // `scripts/deploy-prod.sh`, which passes them as `--var` overrides. Copy
+        // `backend/.prod.vars.example` → `backend/.prod.vars`, fill it, then run that script.
+        // The CHANGE-ME placeholders below keep this file GENERIC (no real deployment data) and
+        // make a bare `wrangler deploy` obviously-unconfigured — `GET /v1/admin/doctor` flags them.
+        "S3_ENDPOINT": "https://CHANGE-ME.r2.cloudflarestorage.com",
+        "S3_BUCKET": "CHANGE-ME",
+        "S3_REGION": "auto",
+        "PUBLIC_BASE_URL": "https://CHANGE-ME.example.com",
+        "WEB_BASE_URL": "https://CHANGE-ME.example.com",
+        "EMAIL_FROM_NAME": "CloudFS",
+        "PRODUCT_NAME": "CloudFS",
+        "WEBAUTHN_RP_NAME": "CloudFS",
+        // Turn the breached-password check ON in prod (fails open if HIBP is unreachable).
+        "CHECK_BREACHED_PASSWORDS": "1"
+        // SAFE-BY-DEFAULT: email is OFF (no provider ⇒ no-op sender) and passkeys are OFF
+        // (WEBAUTHN_RP_ID unset ⇒ routes 404) until you configure them. To enable, add to
+        // `.prod.vars`: EMAIL_FROM + EMAIL_PROVIDER=cloudflare (onboard the domain first),
+        // or another provider's secret for email; WEBAUTHN_RP_ID +
+        // WEBAUTHN_ORIGIN for passkeys. SIGNUP_MODE omitted ⇒ code default "invite".
+        // OIDC_* / AUTH_CONFIG_ADMIN_ORG are configured via the web console or added per deployment.
+      }
+    }
+  }
+}

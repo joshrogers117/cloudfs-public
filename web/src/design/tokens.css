@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later */
+/* Shared visual direction: streamlined file workflows, native system typography. */
+:root {
+  color-scheme: dark;
+  --cfs-bg: #18171d;
+  --cfs-bg-sidebar: #18171d;
+  --cfs-surface: #232228;
+  --cfs-surface-inset: #2c2b33;
+  --cfs-text-primary: oklch(0.95 0.006 285);
+  --cfs-text-secondary: oklch(0.77 0.014 285);
+  --cfs-text-tertiary: oklch(0.68 0.016 285);
+  --cfs-accent: #a08cff;
+  --cfs-accent-hover: oklch(0.79 0.13 291);
+  --cfs-accent-press: oklch(0.68 0.17 291);
+  --cfs-accent-soft: oklch(0.73 0.16 291 / 0.10);
+  --cfs-accent-border: oklch(0.73 0.16 291 / 0.4);
+  --cfs-on-accent: oklch(0.20 0.025 291);
+  --cfs-action: oklch(0.96 0.006 285);
+  --cfs-action-hover: oklch(0.99 0.003 285);
+  --cfs-action-press: oklch(0.88 0.015 285);
+  --cfs-on-action: oklch(0.25 0.015 285);
+  --cfs-info: oklch(0.77 0.11 246);
+  --cfs-divider: oklch(0.9 0.01 285 / 0.09);
+  --cfs-border: #44414f;
+  --cfs-hover: oklch(0.9 0.01 285 / 0.06);
+  --cfs-selection: oklch(0.73 0.16 291 / 0.17);
+  --cfs-card-top-edge: transparent;
+  --cfs-marker-line: oklch(0.9 0.01 285 / 0.55);
+  --cfs-status-ok: oklch(0.81 0.16 145);
+  --cfs-status-busy: oklch(0.77 0.11 246);
+  --cfs-status-paused: oklch(0.72 0.025 270);
+  --cfs-status-warn: oklch(0.82 0.14 75);
+  --cfs-status-error: oklch(0.77 0.14 23);
+  --cfs-status-idle: var(--cfs-text-tertiary);
+
+  /* ---- Spacing scale (4-pt rhythm) — Theme.Space ---- */
+  --cfs-space-xxs: 2px;
+  --cfs-space-xs: 4px;
+  --cfs-space-sm: 6px;
+  --cfs-space-md: 8px;
+  --cfs-space-lg: 12px;
+  --cfs-space-xl: 16px;
+  --cfs-space-xxl: 20px;
+  --cfs-space-xxxl: 24px;
+
+  /* ---- Corner radii — Theme.Radius ---- */
+  --cfs-radius-xs: 2px;
+  --cfs-radius-sm: 5px;
+  --cfs-radius-md: 10px;
+  --cfs-radius-lg: 12px;
+  --cfs-radius-pill: 999px;
+
+  /* ---- Layout metrics — Theme.Metric ---- */
+  --cfs-sidebar-width: 248px;
+  --cfs-row-height: 40px;
+  --cfs-hairline: 1px;
+  --cfs-active-bar-width: 0px;
+  --cfs-content-max: 1080px;
+
+  /* ---- Typography ---- */
+  /* SF on Apple platforms, system stack elsewhere — matches the Mac wordmark. */
+  --cfs-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue",
+    "Segoe UI", system-ui, sans-serif;
+  --cfs-font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Monaco,
+    "Cascadia Mono", "Roboto Mono", monospace;
+
+  /* Semantic type roles — mirror Theme.Font (macOS point sizes ≈ px here). */
+  --cfs-font-hero: 600 30px/1.1 var(--cfs-font-sans);     /* brand wordmark      */
+  --cfs-font-title: 650 24px/1.2 var(--cfs-font-sans);    /* pane titles (title2)*/
+  --cfs-font-headline: 600 15px/1.3 var(--cfs-font-sans); /* card/row emphasis   */
+  --cfs-font-body: 400 14px/1.4 var(--cfs-font-sans);     /* primary text (callout)*/
+  --cfs-font-caption: 400 12px/1.35 var(--cfs-font-sans); /* secondary / labels  */
+  --cfs-font-micro: 400 11px/1.35 var(--cfs-font-sans);   /* micro labels / hints*/
+  --cfs-font-section-label: 600 11px/1.2 var(--cfs-font-sans); /* all-caps labels */
+
+  /* ---- Motion — Theme.Motion (easeInOut, short) ---- */
+  --cfs-motion-quick: 120ms;     /* hover / press feedback */
+  --cfs-motion-standard: 200ms;  /* default UI transitions */
+  --cfs-motion-emphasis: 300ms;  /* larger swaps (sign-in/out) */
+  --cfs-ease: cubic-bezier(0.4, 0, 0.2, 1); /* easeInOut */
+
+  /* ---- Elevation ---- */
+  --cfs-shadow-card: none;
+  --cfs-shadow-brand: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --cfs-motion-quick: 0ms;
+    --cfs-motion-standard: 0ms;
+    --cfs-motion-emphasis: 0ms;
+  }
+}

@@ -20,7 +20,7 @@ Normal users may manage their own connection/cache and perform file operations p
 
 Clients encrypt content before uploading immutable, content-addressed blocks. Upload receipts are checked before metadata commits refer to them. Reads use scoped, expiring signed storage URLs; clients verify and decrypt blocks into the filesystem read path. Metadata and filenames remain visible to the server operator.
 
-The Worker stores filespace master keys and configured provider credentials sealed under `STORAGE_ENC_KEY`. The deployment operator can recover these values. This is client-side encryption with administrator-controlled keys, not zero-knowledge encryption. Protect both the Cloudflare account and the local deployment secrets file. Encryption does not replace access control, backup or endpoint security.
+The Worker stores filespace master keys and console-managed provider credentials sealed under `STORAGE_ENC_KEY`. Deployment-default S3 credentials and environment credential references are stored as Cloudflare Worker secrets, outside that application-level sealing layer. The deployment operator can recover these values. This is client-side encryption with administrator-controlled keys, not zero-knowledge encryption. Protect both the Cloudflare account and the local deployment secrets file. Encryption does not replace access control, backup or endpoint security.
 
 The Mac keeps authenticated credentials in Keychain and encrypted blocks in its local cache. Pending writes and recovery state must be preserved until remote durability is confirmed. Local operating-system account compromise is outside the protection supplied by an application-level cache.
 

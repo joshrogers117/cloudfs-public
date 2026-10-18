@@ -10,7 +10,7 @@ This project is a public preview. Security fixes target the latest preview; ther
 
 ## Trust and data protection
 
-Files are encrypted on the client before upload. Filespace master keys and configured provider secrets are sealed under the server's `STORAGE_ENC_KEY`. The server operator can access those keys and must be trusted. CloudFS does not provide zero-knowledge protection from a malicious operator or a fully compromised client.
+Files are encrypted on the client before upload. Filespace master keys and console-managed provider secrets are sealed under the server's `STORAGE_ENC_KEY`. Deployment-default provider credentials are stored as Cloudflare Worker secrets. The server operator can access those keys and must be trusted. CloudFS does not provide zero-knowledge protection from a malicious operator or a fully compromised client.
 
 Authorization is enforced by the server, including CLI requests. Hiding an administrative control is not an authorization boundary. Browser sessions and native device sessions can be revoked; signed storage URLs remain usable until their short expiry.
 

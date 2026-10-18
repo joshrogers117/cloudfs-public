@@ -16,7 +16,7 @@ No command below deploys to Cloudflare automatically. Keep normal client traffic
 
 ## Prepare private inputs
 
-Use Node.js 22 or later. Put the configuration and secret files in a private directory and set their permissions to `0600`. The tool reads JSON as data; it never executes a shell configuration. Do not put secret values on the command line.
+Use Node.js 22.12 or later. Put the configuration and secret files in a private directory and set their permissions to `0600`. The tool reads JSON as data; it never executes a shell configuration. Do not put secret values on the command line.
 
 Example private configuration:
 
